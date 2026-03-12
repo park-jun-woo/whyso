@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/clari/whylog/internal/history"
+	"github.com/clari/whyso/internal/history"
 )
 
 // ReadYAML reads an existing YAML history file back into a FileHistory.

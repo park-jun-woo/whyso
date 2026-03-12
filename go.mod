@@ -1,3 +1,3 @@
-module github.com/clari/whylog
+module github.com/clari/whyso
 
 go 1.22.2

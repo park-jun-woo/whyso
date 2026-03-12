@@ -1,4 +1,4 @@
-# whylog: Claude Code 세션에서 파일별 변경 히스토리 추출
+# whyso: Claude Code 세션에서 파일별 변경 히스토리 추출
 
 ## 핵심 아이디어
 
@@ -46,7 +46,7 @@ user message (uuid: A)
 
 중간에 `tool_result` 타입의 user 메시지가 끼어 있으므로, `type == "user"` && `content`가 문자열인 것만 추출하면 진짜 사용자 요청을 찾을 수 있다.
 
-## 실측 데이터 (검증용: whylog 프로젝트)
+## 실측 데이터 (검증용: whyso 프로젝트)
 
 | 항목 | 수치 |
 |---|---|
@@ -67,7 +67,7 @@ history:
   - timestamp: 2026-03-08T14:23:01Z
     session: 09351222-d7be-41fe-994f-87c2d7067e5d
     action: create
-    user_request: "whylog validate 명령어 구현 시작해"
+    user_request: "whyso validate 명령어 구현 시작해"
     tool: Write
     summary: 초기 crosscheck 패키지 생성 — SSaC↔OpenAPI operationId 매칭 검증
 
@@ -100,19 +100,19 @@ diff(old_string→new_string)를 보고 한 줄 요약을 생성.
 
 ```bash
 # 특정 파일의 히스토리 추출
-whylog history internal/crosscheck/crosscheck.go
+whyso history internal/crosscheck/crosscheck.go
 
 # 디렉토리 전체 파일의 히스토리 일괄 생성
-whylog history internal/crosscheck/ --output histories/
+whyso history internal/crosscheck/ --output histories/
 
 # 특정 프로젝트의 모든 파일 히스토리 (소스코드, 문서 등 전체)
-whylog history . --all --output .file-histories/
+whyso history . --all --output .file-histories/
 
 # 세션 목록 조회
-whylog sessions
+whyso sessions
 
 # 특정 세션의 변경 파일 목록
-whylog sessions <session-id> --files
+whyso sessions <session-id> --files
 ```
 
 ### 옵션
@@ -131,8 +131,8 @@ whylog sessions <session-id> --files
 
 현재 작업 디렉토리의 절대 경로에서 `/`와 `.`을 `-`로 치환하여 프로젝트 슬러그를 생성:
 ```
-/home/parkjunwoo/.clari/repos/whylog
-→ -home-parkjunwoo--clari-repos-whylog
+/home/parkjunwoo/.clari/repos/whyso
+→ -home-parkjunwoo--clari-repos-whyso
 ```
 
 ### 2. Bash 명령어에서 파일 조작 감지
@@ -151,7 +151,7 @@ Write/Edit는 명시적이지만, Bash는 휴리스틱이 필요:
 
 ### 4. 성능
 
-검증 프로젝트(whylog): 17개 세션, 2,281개 tool_use. 파싱 시간은 무시할 수준.
+검증 프로젝트(whyso): 17개 세션, 2,281개 tool_use. 파싱 시간은 무시할 수준.
 대규모 프로젝트(수백 세션)에서도 JSONL 스트리밍 파싱이므로 메모리 문제 없음.
 
 ### 5. 개인정보
@@ -161,13 +161,13 @@ Write/Edit는 명시적이지만, Bash는 휴리스틱이 필요:
 
 ## 프로젝트 구조
 
-whylog는 독립 프로젝트로 개발한다.
+whyso는 독립 프로젝트로 개발한다.
 
 ### 주요 컴포넌트
 
 | 컴포넌트 | 역할 |
 |---|---|
-| CLI (`whylog`) | 세션 파싱, 히스토리 추출, 로컬 조회 |
+| CLI (`whyso`) | 세션 파싱, 히스토리 추출, 로컬 조회 |
 | 백엔드 (Go) | 파싱된 데이터를 PostgreSQL에 저장, API 제공 |
 | 앱 프론트엔드 (React) | 파일별 히스토리 탐색 UI |
 | 콘텐츠 프론트엔드 (Hugo) | 프로젝트 소개 페이지 |
@@ -176,7 +176,7 @@ whylog는 독립 프로젝트로 개발한다.
 
 ```
 ~/.claude/projects/**/*.jsonl
-  → whylog parse (JSONL 파싱 + tool_use 추출)
-  → whylog history (parentUuid 체인 역추적 → 파일별 히스토리 구축)
+  → whyso parse (JSONL 파싱 + tool_use 추출)
+  → whyso history (parentUuid 체인 역추적 → 파일별 히스토리 구축)
   → DB 저장 or stdout 출력
 ```

@@ -8,9 +8,9 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/clari/whylog/internal/history"
-	"github.com/clari/whylog/internal/output"
-	"github.com/clari/whylog/internal/parser"
+	"github.com/clari/whyso/internal/history"
+	"github.com/clari/whyso/internal/output"
+	"github.com/clari/whyso/internal/parser"
 )
 
 func main() {
@@ -43,7 +43,7 @@ func main() {
 }
 
 func printUsage() {
-	fmt.Fprintln(os.Stderr, "Usage: whylog <command>")
+	fmt.Fprintln(os.Stderr, "Usage: whyso <command>")
 	fmt.Fprintln(os.Stderr, "")
 	fmt.Fprintln(os.Stderr, "Commands:")
 	fmt.Fprintln(os.Stderr, "  sessions    List sessions for the current project")
@@ -166,7 +166,7 @@ func runHistory() error {
 	}
 
 	if target == "" {
-		return fmt.Errorf("usage: whylog history <file|dir> [--all] [--format yaml|json] [--output dir]")
+		return fmt.Errorf("usage: whyso history <file|dir> [--all] [--format yaml|json] [--output dir]")
 	}
 
 	// resolve target to absolute path for matching
@@ -220,7 +220,6 @@ func runHistory() error {
 
 	if len(histories) == 0 {
 		if outputDir != "" {
-			// incremental: no new changes, existing files are up to date
 			return nil
 		}
 		fmt.Println("No history found.")

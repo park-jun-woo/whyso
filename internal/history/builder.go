@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/clari/whylog/internal/parser"
+	"github.com/clari/whyso/internal/parser"
 )
 
 // FileHistory holds the complete change history for a single file.

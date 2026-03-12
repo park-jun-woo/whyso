@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/clari/whylog/internal/history"
+	"github.com/clari/whyso/internal/history"
 )
 
 // FormatYAML writes a FileHistory as YAML to w.

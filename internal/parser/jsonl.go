@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/clari/whylog/internal/model"
+	"github.com/clari/whyso/internal/model"
 )
 
 const maxLineSize = 10 * 1024 * 1024 // 10MB

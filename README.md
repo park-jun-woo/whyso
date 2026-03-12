@@ -1,33 +1,33 @@
-# whylog
+# whyso
 
 Extract the **"why"** behind every file change from Claude Code sessions.
 
 `git blame` shows *who* changed *what* and *when*.
-`whylog` shows **why** — the original user intent and AI's reasoning behind each change.
+`whyso` shows **why** — the original user intent and AI's reasoning behind each change.
 
 ## How it works
 
-Claude Code stores every conversation as JSONL files in `~/.claude/projects/`. whylog parses these sessions, extracts Write/Edit tool invocations, and traces the `parentUuid` chain back to the original user request.
+Claude Code stores every conversation as JSONL files in `~/.claude/projects/`. whyso parses these sessions, extracts Write/Edit tool invocations, and traces the `parentUuid` chain back to the original user request.
 
 ```
 ~/.claude/projects/**/*.jsonl
-  → whylog parse (JSONL parsing + tool_use extraction)
-  → whylog history (parentUuid chain → per-file history)
+  → whyso parse (JSONL parsing + tool_use extraction)
+  → whyso history (parentUuid chain → per-file history)
   → stdout or file output
 ```
 
 ## Install
 
 ```bash
-go install github.com/park-jun-woo/whylog/cmd/whylog@latest
+go install github.com/park-jun-woo/whyso/cmd/whyso@latest
 ```
 
 Or build from source:
 
 ```bash
-git clone https://github.com/park-jun-woo/whylog.git
-cd whylog
-go build ./cmd/whylog/
+git clone https://github.com/park-jun-woo/whyso.git
+cd whyso
+go build ./cmd/whyso/
 ```
 
 ## Usage
@@ -35,23 +35,26 @@ go build ./cmd/whylog/
 ### List sessions
 
 ```bash
-whylog sessions
+whyso sessions
 ```
 
 ### Show file change history
 
 ```bash
 # Single file
-whylog history README.md
+whyso history README.md
 
 # All files in a directory
-whylog history internal/ --all
+whyso history internal/ --all
+
+# All files in a directory
+whyso history . --all
 
 # Output to directory (mirrors file structure)
-whylog history . --all --output .file-histories/
+whyso history . --all --output .whyso/
 
 # JSON format
-whylog history README.md --format json
+whyso history README.md --format json
 ```
 
 ### Example output
@@ -91,12 +94,12 @@ history:
 - **AI answer extraction** — captures Claude's explanation of what it did
 - **Grouped changes** — consecutive edits from the same request are merged
 - **Subagent support** — includes changes made by subagent sessions
-- **Incremental updates** — only re-parses modified sessions when using `--output`
+- **Incremental updates** — caches to `.whyso/`, only re-parses new sessions
 - **Directory mirroring** — output structure mirrors source file paths
 
 ## Scope
 
-whylog tracks all **text-based files** modified via Claude Code's Write/Edit tools. Binary files are excluded as they are not targets of these tools.
+whyso tracks all **text-based files** modified via Claude Code's Write/Edit tools. Binary files are excluded as they are not targets of these tools.
 
 ## License
 

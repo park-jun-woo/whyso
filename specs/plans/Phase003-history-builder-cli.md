@@ -2,7 +2,7 @@
 
 ## 목표
 
-파일별 변경 히스토리를 집계하고, `whylog history` CLI로 yaml/json 출력한다.
+파일별 변경 히스토리를 집계하고, `whyso history` CLI로 yaml/json 출력한다.
 
 ## 근거 문서
 
@@ -15,7 +15,7 @@
 ### 출력 디렉토리 구조
 
 - `--output` 디렉토리 아래에 원본 파일 경로를 미러링
-- 예: `whylog history internal/parser/ --output histories/`
+- 예: `whyso history internal/parser/ --output histories/`
   - `internal/parser/jsonl.go` → `histories/internal/parser/jsonl.go.yaml`
 
 ### 증분 갱신 전략
@@ -45,13 +45,13 @@
 
 ### Step 4. CLI 확장
 
-- [ ] `whylog history <file>` — 단일 파일 히스토리
-- [ ] `whylog history <dir> --all` — 디렉토리 전체
+- [ ] `whyso history <file>` — 단일 파일 히스토리
+- [ ] `whyso history <dir> --all` — 디렉토리 전체
 - [ ] 옵션: `--format`, `--since`, `--output`
 
 ### Step 5. 검증
 
-- [ ] whylog 프로젝트 자체 세션으로 end-to-end 검증
+- [ ] whyso 프로젝트 자체 세션으로 end-to-end 검증
 - [ ] 출력 형식이 기획서 예시와 일치하는지 확인
 
 ## 산출물
@@ -61,4 +61,4 @@
 | `specs/backend/service/history.go` | 히스토리 SSOT |
 | `internal/history/builder.go` | 히스토리 빌더 |
 | `internal/output/formatter.go` | 출력 포매터 |
-| `cmd/whylog/main.go` | CLI 확장 |
+| `cmd/whyso/main.go` | CLI 확장 |
