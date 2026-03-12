@@ -16,6 +16,9 @@ whyso map [path]
 # Save map to custom file
 whyso map [path] -o custom.md
 
+# Force map regeneration
+whyso map -f
+
 # Single file history (stdout + .whyso/ cache)
 whyso history <file>
 
@@ -27,6 +30,9 @@ whyso history <file> -q
 
 # JSON output
 whyso history <file> --format json
+
+# Clear history cache and rebuild
+whyso history <file> --reset
 
 # List sessions
 whyso sessions
@@ -42,6 +48,8 @@ whyso sessions
 ## Map output format
 
 ```
+# whyso/v1
+
 ## go
 [parser]ParseSession,ExtractChanges,ListSessions
 
@@ -57,6 +65,7 @@ Supported: Go, TypeScript, JavaScript, Python, Rust, SSaC, OpenAPI, SQL, Rego, G
 ## History output format (YAML)
 
 ```yaml
+apiVersion: whyso/v1
 file: internal/parser/jsonl.go
 created: 2026-03-12T01:22:43Z
 history:

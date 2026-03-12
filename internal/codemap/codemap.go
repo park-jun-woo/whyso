@@ -15,6 +15,41 @@ type Section struct {
 	Groups   map[string][]string // group name -> keywords
 }
 
+// NeedsUpdate returns true if any source file in root is newer than mapFile.
+// Returns true if mapFile does not exist.
+func NeedsUpdate(root, mapFile string) bool {
+	info, err := os.Stat(mapFile)
+	if err != nil {
+		return true
+	}
+	mapMtime := info.ModTime()
+
+	needsUpdate := false
+	filepath.Walk(root, func(path string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
+		if fi.IsDir() {
+			if shouldSkipDir(fi.Name()) {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		ext := filepath.Ext(path)
+		rel, _ := filepath.Rel(root, path)
+		lang, _ := detectParser(ext, rel)
+		if lang == "" {
+			return nil
+		}
+		if fi.ModTime().After(mapMtime) {
+			needsUpdate = true
+			return filepath.SkipAll
+		}
+		return nil
+	})
+	return needsUpdate
+}
+
 // BuildMap scans the directory and extracts keywords from all supported files.
 func BuildMap(root string) ([]Section, error) {
 	sections := map[string]map[string][]string{} // language -> group -> keywords
@@ -66,12 +101,13 @@ func BuildMap(root string) ([]Section, error) {
 	return buildSections(sections), nil
 }
 
+const Version = "0.1.0"
+
 // FormatMap writes the map to w in the standard format.
 func FormatMap(w io.Writer, sections []Section) {
-	for i, sec := range sections {
-		if i > 0 {
-			fmt.Fprintln(w)
-		}
+	fmt.Fprintln(w, "# whyso/v1")
+	for _, sec := range sections {
+		fmt.Fprintln(w)
 		fmt.Fprintf(w, "## %s\n", sec.Language)
 
 		groups := sortedKeys(sec.Groups)

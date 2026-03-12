@@ -41,11 +41,16 @@ whyso map internal/
 
 # Custom output file
 whyso map -o custom.md
+
+# Force regeneration
+whyso map -f
 ```
 
 Example output:
 
 ```
+# whyso/v1
+
 ## go
 [parser]ParseSession,ExtractChanges,ListSessions
 [history]BuildHistories,BuildIndex,FindUserRequest
@@ -76,11 +81,15 @@ whyso history . --all --output custom-dir/
 
 # JSON format
 whyso history README.md --format json
+
+# Clear cache and rebuild
+whyso history README.md --reset
 ```
 
 Example output:
 
 ```yaml
+apiVersion: whyso/v1
 file: CLAUDE.md
 created: 2026-03-12T01:22:43Z
 history:
@@ -103,9 +112,11 @@ whyso sessions
 | Flag | Description |
 |---|---|
 | `-o <file>` | Map output file (default: `.whyso/_map.md`) |
+| `-f, --force` | Force map regeneration (ignore mtime) |
 | `--output <dir>` | History output directory (default: `.whyso/`) |
 | `--format <yaml\|json>` | History output format (default: yaml) |
 | `-q, --quiet` | Suppress stdout output |
+| `--reset` | Clear history cache and rebuild |
 | `--all` | Include all files in directory |
 | `--sessions-dir <path>` | Override Claude Code sessions directory |
 

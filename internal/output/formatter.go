@@ -11,8 +11,11 @@ import (
 	"github.com/clari/whyso/internal/history"
 )
 
+const Version = "0.1.0"
+
 // FormatYAML writes a FileHistory as YAML to w.
 func FormatYAML(w io.Writer, h *history.FileHistory) error {
+	fmt.Fprintf(w, "apiVersion: whyso/v1\n")
 	fmt.Fprintf(w, "file: %s\n", h.File)
 	fmt.Fprintf(w, "created: %s\n", h.Created.Format(time.RFC3339))
 	fmt.Fprintf(w, "history:\n")

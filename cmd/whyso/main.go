@@ -60,11 +60,13 @@ func printUsage() {
 	fmt.Fprintln(os.Stderr, "")
 	fmt.Fprintln(os.Stderr, "Map options:")
 	fmt.Fprintln(os.Stderr, "  -o <file>                Output file (default: .whyso/_map.md)")
+	fmt.Fprintln(os.Stderr, "  -f, --force              Force regeneration")
 	fmt.Fprintln(os.Stderr, "")
 	fmt.Fprintln(os.Stderr, "History options:")
 	fmt.Fprintln(os.Stderr, "  --format <yaml|json>     Output format (default: yaml)")
 	fmt.Fprintln(os.Stderr, "  --output <dir>           Write to directory only, no stdout (default: .whyso/)")
 	fmt.Fprintln(os.Stderr, "  -q, --quiet              Suppress stdout output")
+	fmt.Fprintln(os.Stderr, "  --reset                  Clear cache and rebuild from scratch")
 	fmt.Fprintln(os.Stderr, "  --all                    All files in directory")
 	fmt.Fprintln(os.Stderr, "")
 	fmt.Fprintln(os.Stderr, "Options:")
@@ -151,7 +153,7 @@ func runHistory() error {
 
 	// parse args after "history"
 	var target, format, outputDir string
-	var all, quiet bool
+	var all, quiet, reset bool
 	format = "yaml"
 
 	for i := 2; i < len(os.Args); i++ {
@@ -170,6 +172,8 @@ func runHistory() error {
 			quiet = true
 		case "--all":
 			all = true
+		case "--reset":
+			reset = true
 		case "--sessions-dir":
 			i++ // already handled
 		default:
@@ -221,6 +225,10 @@ func runHistory() error {
 		return relPath == targetRel
 	}
 
+	if reset {
+		clearCache(outputDir, format)
+	}
+
 	since := oldestOutputMtime(outputDir, format)
 	var histories map[string]*history.FileHistory
 	var buildErr error
@@ -259,6 +267,7 @@ func runHistory() error {
 
 func runMap() error {
 	var target, outputFile string
+	var force bool
 
 	for i := 2; i < len(os.Args); i++ {
 		switch os.Args[i] {
@@ -267,6 +276,8 @@ func runMap() error {
 				outputFile = os.Args[i+1]
 				i++
 			}
+		case "-f", "--force":
+			force = true
 		default:
 			if target == "" {
 				target = os.Args[i]
@@ -283,16 +294,6 @@ func runMap() error {
 		return err
 	}
 
-	sections, err := codemap.BuildMap(absTarget)
-	if err != nil {
-		return err
-	}
-
-	if len(sections) == 0 {
-		fmt.Println("No keywords found.")
-		return nil
-	}
-
 	// default output: .whyso/_map.md
 	if outputFile == "" {
 		cwd, err := os.Getwd()
@@ -304,6 +305,22 @@ func runMap() error {
 			return err
 		}
 		outputFile = filepath.Join(defaultDir, "_map.md")
+	}
+
+	// skip if no source files are newer than _map.md
+	if !force && !codemap.NeedsUpdate(absTarget, outputFile) {
+		fmt.Fprintln(os.Stderr, "up to date")
+		return nil
+	}
+
+	sections, err := codemap.BuildMap(absTarget)
+	if err != nil {
+		return err
+	}
+
+	if len(sections) == 0 {
+		fmt.Println("No keywords found.")
+		return nil
 	}
 
 	// write to file
@@ -336,6 +353,18 @@ func oldestOutputMtime(dir, format string) time.Time {
 		return nil
 	})
 	return oldest
+}
+
+func clearCache(dir, format string) {
+	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil || info.IsDir() {
+			return nil
+		}
+		if strings.HasSuffix(path, "."+format) {
+			os.Remove(path)
+		}
+		return nil
+	})
 }
 
 func getSessionsDir() (string, error) {
