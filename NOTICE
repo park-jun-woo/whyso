@@ -1,0 +1,8 @@
+whylog
+Copyright 2026 Park Junwoo
+
+This product includes software developed by Park Junwoo.
+
+This project was built with the assistance of Claude Code by Anthropic.
+It parses Claude Code session data stored locally on the user's machine.
+No data is sent to external services.

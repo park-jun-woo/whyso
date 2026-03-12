@@ -1,0 +1,30 @@
+// Package chain — parentUuid 역추적 SSOT
+//
+// 책임: FileChange의 RecordUUID에서 parentUuid 체인을 역추적하여
+//       원래 사용자 요청(user message)을 찾는다.
+//
+// ## 데이터 구조
+//
+// RecordIndex: map[string]*Record   // uuid → Record 빠른 조회
+//
+// ## 역추적 시퀀스
+//
+//   BuildIndex(records []Record) → RecordIndex
+//     1. records 순회
+//     2. map[record.UUID] = &record
+//
+//   FindUserRequest(index RecordIndex, recordUUID string) → string
+//     1. current = index[recordUUID]
+//     2. loop:
+//        a. current.ParentUUID == nil → return "" (체인 끊김)
+//        b. parent = index[*current.ParentUUID]
+//        c. parent == nil → return "" (부모 없음)
+//        d. parent.IsUserMessage() → return parent.UserContent()
+//        e. current = parent → loop 반복
+//     3. 최대 100회 반복 (무한루프 방지)
+//
+// ## 서브에이전트 처리
+//
+//   서브에이전트 JSONL은 별도 파일이므로, 세션 파싱 시
+//   메인 + 서브에이전트 레코드를 합쳐서 하나의 RecordIndex를 구축한다.
+//   → Phase001의 ParseSession 확장 또는 별도 함수로 처리

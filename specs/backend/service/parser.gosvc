@@ -1,0 +1,63 @@
+// Package parser — JSONL 세션 파서 SSOT
+//
+// 책임: Claude Code 세션 JSONL 파일을 읽어 Go 구조체로 변환한다.
+//
+// ## 데이터 모델
+//
+// Record (JSONL 한 줄)
+//   - Type        string          // "user" | "assistant" | "file-history-snapshot"
+//   - UUID        string
+//   - ParentUUID  *string         // nil이면 최상위 사용자 메시지
+//   - Timestamp   time.Time
+//   - SessionID   string
+//   - Message     Message
+//   - CWD         string
+//   - UserType    string          // "external"
+//
+// Message
+//   - Role    string              // "user" | "assistant"
+//   - Content json.RawMessage     // string(사용자) 또는 []ContentBlock(assistant/tool_result)
+//
+// ContentBlock
+//   - Type    string              // "text" | "tool_use" | "tool_result"
+//   - Text    string              // type=="text"일 때
+//   - ID      string              // type=="tool_use"일 때 (toolu_*)
+//   - Name    string              // tool 이름: Write, Edit, Read, Bash, ...
+//   - Input   json.RawMessage     // tool별 입력 파라미터
+//
+// ## 사용자 메시지 판별
+//
+//   record.Type == "user" && message.Content가 string → 진짜 사용자 요청
+//   record.Type == "user" && message.Content가 array  → tool_result 컨테이너
+//
+// ## 파싱 시퀀스
+//
+//   OpenSession(path string) → *bufio.Scanner, error
+//     1. os.Open(path)
+//     2. bufio.NewScanner(file) — 라인 단위
+//     3. scanner.Buffer(buf, 10MB) — 긴 라인 대응
+//
+//   ParseRecord(line []byte) → Record, error
+//     1. json.Unmarshal(line, &record)
+//     2. timestamp 파싱
+//     3. return record
+//
+//   ParseSession(path string) → []Record, error
+//     1. OpenSession(path)
+//     2. for scanner.Scan() → ParseRecord → append
+//     3. return records
+//
+// ## 세션 디렉토리 감지
+//
+//   DetectSessionsDir(cwd string) → string, error
+//     1. cwd의 절대경로를 구한다
+//     2. "/" → "-", "." → "-", 선행 "-" 추가 → slug
+//     3. ~/.claude/projects/{slug}/ 반환
+//     4. 디렉토리 존재 확인
+//
+//   ListSessions(dir string) → []SessionInfo, error
+//     1. os.ReadDir(dir)
+//     2. *.jsonl 파일 필터링
+//     3. 각 파일에서 첫 user 메시지(content가 string) 추출
+//     4. SessionInfo{ID, Timestamp, FirstMessage} 반환
+//     5. Timestamp 기준 정렬
