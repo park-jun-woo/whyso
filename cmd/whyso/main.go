@@ -52,7 +52,8 @@ func printUsage() {
 	fmt.Fprintln(os.Stderr, "")
 	fmt.Fprintln(os.Stderr, "History options:")
 	fmt.Fprintln(os.Stderr, "  --format <yaml|json>     Output format (default: yaml)")
-	fmt.Fprintln(os.Stderr, "  --output <dir>           Write to directory (mirrors file structure)")
+	fmt.Fprintln(os.Stderr, "  --output <dir>           Write to directory only, no stdout (default: .whyso/)")
+	fmt.Fprintln(os.Stderr, "  -q, --quiet              Suppress stdout output")
 	fmt.Fprintln(os.Stderr, "  --all                    All files in directory")
 	fmt.Fprintln(os.Stderr, "")
 	fmt.Fprintln(os.Stderr, "Options:")
@@ -139,7 +140,7 @@ func runHistory() error {
 
 	// parse args after "history"
 	var target, format, outputDir string
-	var all bool
+	var all, quiet bool
 	format = "yaml"
 
 	for i := 2; i < len(os.Args); i++ {
@@ -154,6 +155,8 @@ func runHistory() error {
 				outputDir = os.Args[i+1]
 				i++
 			}
+		case "--quiet", "-q":
+			quiet = true
 		case "--all":
 			all = true
 		case "--sessions-dir":
@@ -163,6 +166,12 @@ func runHistory() error {
 				target = os.Args[i]
 			}
 		}
+	}
+
+	// always cache to .whyso/ unless --output overrides
+	cacheDir := filepath.Join(projectRoot, ".whyso")
+	if outputDir == "" {
+		outputDir = cacheDir
 	}
 
 	if target == "" {
@@ -201,44 +210,38 @@ func runHistory() error {
 		return relPath == targetRel
 	}
 
+	since := oldestOutputMtime(outputDir, format)
 	var histories map[string]*history.FileHistory
 	var buildErr error
-
-	if outputDir != "" {
-		since := oldestOutputMtime(outputDir, format)
-		if since.IsZero() {
-			histories, buildErr = history.BuildHistories(sessionsDir, projectRoot, filter)
-		} else {
-			histories, buildErr = history.BuildHistoriesIncremental(sessionsDir, projectRoot, since, filter)
-		}
-	} else {
+	if since.IsZero() {
 		histories, buildErr = history.BuildHistories(sessionsDir, projectRoot, filter)
+	} else {
+		histories, buildErr = history.BuildHistoriesIncremental(sessionsDir, projectRoot, since, filter)
 	}
 	if buildErr != nil {
 		return buildErr
 	}
 
 	if len(histories) == 0 {
-		if outputDir != "" {
-			return nil
-		}
-		fmt.Println("No history found.")
 		return nil
 	}
 
-	if outputDir != "" {
-		return output.WriteHistories(histories, outputDir, format)
+	// always write cache
+	if err := output.WriteHistories(histories, outputDir, format); err != nil {
+		return err
 	}
 
-	// stdout
-	for _, h := range histories {
-		switch format {
-		case "json":
-			output.FormatJSON(os.Stdout, h)
-		default:
-			output.FormatYAML(os.Stdout, h)
+	// stdout: single file only, unless -q or --output suppresses
+	if !quiet && outputDir == filepath.Join(projectRoot, ".whyso") && !targetInfo.IsDir() {
+		for _, h := range histories {
+			switch format {
+			case "json":
+				output.FormatJSON(os.Stdout, h)
+			default:
+				output.FormatYAML(os.Stdout, h)
+			}
+			fmt.Println("---")
 		}
-		fmt.Println("---")
 	}
 	return nil
 }

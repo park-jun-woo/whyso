@@ -12,16 +12,15 @@
 
 ## 변경 후 동작
 
-- `--output` 미지정 → `.whyso/`에 저장 (기본값), 증분 업데이트 작동
-- `--output dir` 지정 → 기존과 동일, 지정 경로 우선
-- `--stdout` 플래그 추가 → 명시적으로 stdout 출력 (기존 동작 유지용)
+- `--output` 미지정 → `.whyso/`에 캐시 저장 + stdout 출력 (기본)
+- `--output dir` 지정 → 지정 경로에 저장, stdout 출력 없음
 
 ## 변경 대상
 
 ### cmd/whyso/main.go
 - `outputDir` 기본값을 프로젝트 루트 기준 `.whyso/`로 설정
-- `--stdout` 플래그 추가: outputDir 무시하고 stdout 출력
-- `outputDir == ""` 분기 제거 → 항상 파일 출력이 기본
+- 기본: 캐시 저장 + stdout 동시 출력
+- `--output` 명시 시: 해당 경로에만 저장, stdout 없음
 
 ### .gitignore
 - `.whyso/` 추가
@@ -49,4 +48,4 @@ project-root/
 1. `outputDir`이 비어있으면 `filepath.Join(projectRoot, ".whyso")`로 설정
 2. `.whyso/` 디렉토리 없으면 자동 생성
 3. `oldestOutputMtime`이 `.whyso/` 내 파일 확인 → 이후 세션만 파싱
-4. `--stdout` 지정 시 기존 stdout 출력 경로 실행
+4. 항상 캐시 저장, `--output` 미지정 시 stdout도 출력
