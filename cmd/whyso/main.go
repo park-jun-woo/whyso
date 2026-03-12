@@ -229,7 +229,17 @@ func runHistory() error {
 		clearCache(outputDir, format)
 	}
 
-	since := oldestOutputMtime(outputDir, format)
+	// 단일 파일이면 해당 캐시 파일의 mtime만 확인, 디렉토리면 전체 캐시 중 가장 오래된 mtime
+	var since time.Time
+	if !targetInfo.IsDir() {
+		targetRel, _ := filepath.Rel(projectRoot, absTarget)
+		cachedPath := output.OutputPath(outputDir, targetRel, format)
+		if info, err := os.Stat(cachedPath); err == nil {
+			since = info.ModTime()
+		}
+	} else {
+		since = oldestOutputMtime(outputDir, format)
+	}
 	var histories map[string]*history.FileHistory
 	var buildErr error
 	if since.IsZero() {
