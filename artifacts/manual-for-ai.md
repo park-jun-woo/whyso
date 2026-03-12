@@ -2,34 +2,59 @@
 
 ## What it does
 
-`whyso` extracts the **why** behind file changes from Claude Code sessions. Use it before modifying code to understand prior intent.
+`whyso` gives AI agents two things before touching code:
+
+- **`whyso map`** — what exists (functions, endpoints, rules, states)
+- **`whyso history`** — why it was changed (user intent + AI reasoning)
 
 ## Commands
 
 ```bash
-# View history of a single file
+# Generate keyword map (stdout + .whyso/_map.md)
+whyso map [path]
+
+# Save map to custom file
+whyso map [path] -o custom.md
+
+# Single file history (stdout + .whyso/ cache)
 whyso history <file>
 
-# View history of all files in a directory
+# Directory history (.whyso/ cache only)
 whyso history <dir> --all
 
-# Save to directory (enables incremental updates via mtime)
-whyso history . --all --output .whyso/
+# Quiet mode (cache only, no stdout)
+whyso history <file> -q
 
 # JSON output
 whyso history <file> --format json
 
-# List sessions for current project
+# List sessions
 whyso sessions
 ```
 
 ## Recommended workflow
 
-1. `whyso history <file>` — read why the file was changed before editing
-2. `Grep "functionName"` — locate the exact code
-3. Edit with full context
+1. `Read .whyso/_map.md` — scan all keywords (functions, endpoints, queries, states)
+2. `whyso history <file>` — read why the file was changed before editing
+3. `Grep "keyword"` — locate exact code with precise keyword from the map
+4. Edit with full context
 
-## Output format (YAML)
+## Map output format
+
+```
+## go
+[parser]ParseSession,ExtractChanges,ListSessions
+
+## ssac
+[service/gig]CreateGig,UpdateGig,PublishGig
+
+## openapi
+[api]CreateGig,UpdateGig,ListGigs
+```
+
+Supported: Go, TypeScript, JavaScript, Python, Rust, SSaC, OpenAPI, SQL, Rego, Gherkin, STML, Mermaid.
+
+## History output format (YAML)
 
 ```yaml
 file: internal/parser/jsonl.go
@@ -45,4 +70,9 @@ history:
 
 ## Caching
 
-When using `--output <dir>`, only new sessions are parsed on subsequent runs. Use `--output .whyso/` to maintain a persistent cache in the project root.
+All output is cached to `.whyso/` by default:
+
+- `.whyso/_map.md` — keyword map
+- `.whyso/*.yaml` — file history (incremental, mtime-based)
+
+Subsequent runs only parse new sessions.

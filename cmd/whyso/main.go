@@ -8,6 +8,7 @@ import (
 	"text/tabwriter"
 	"time"
 
+	"github.com/clari/whyso/internal/codemap"
 	"github.com/clari/whyso/internal/history"
 	"github.com/clari/whyso/internal/output"
 	"github.com/clari/whyso/internal/parser"
@@ -35,6 +36,11 @@ func main() {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err)
 			os.Exit(1)
 		}
+	case "map":
+		if err := runMap(); err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", os.Args[1])
 		printUsage()
@@ -49,6 +55,11 @@ func printUsage() {
 	fmt.Fprintln(os.Stderr, "  sessions    List sessions for the current project")
 	fmt.Fprintln(os.Stderr, "  changes     List file changes across all sessions")
 	fmt.Fprintln(os.Stderr, "  history     Show file change history")
+	fmt.Fprintln(os.Stderr, "  map         Generate keyword map (functions, endpoints, etc.)")
+	fmt.Fprintln(os.Stderr, "")
+	fmt.Fprintln(os.Stderr, "")
+	fmt.Fprintln(os.Stderr, "Map options:")
+	fmt.Fprintln(os.Stderr, "  -o <file>                Output file (default: .whyso/_map.md)")
 	fmt.Fprintln(os.Stderr, "")
 	fmt.Fprintln(os.Stderr, "History options:")
 	fmt.Fprintln(os.Stderr, "  --format <yaml|json>     Output format (default: yaml)")
@@ -243,6 +254,68 @@ func runHistory() error {
 			fmt.Println("---")
 		}
 	}
+	return nil
+}
+
+func runMap() error {
+	var target, outputFile string
+
+	for i := 2; i < len(os.Args); i++ {
+		switch os.Args[i] {
+		case "-o":
+			if i+1 < len(os.Args) {
+				outputFile = os.Args[i+1]
+				i++
+			}
+		default:
+			if target == "" {
+				target = os.Args[i]
+			}
+		}
+	}
+
+	if target == "" {
+		target = "."
+	}
+
+	absTarget, err := filepath.Abs(target)
+	if err != nil {
+		return err
+	}
+
+	sections, err := codemap.BuildMap(absTarget)
+	if err != nil {
+		return err
+	}
+
+	if len(sections) == 0 {
+		fmt.Println("No keywords found.")
+		return nil
+	}
+
+	// default output: .whyso/_map.md
+	if outputFile == "" {
+		cwd, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+		defaultDir := filepath.Join(cwd, ".whyso")
+		if err := os.MkdirAll(defaultDir, 0755); err != nil {
+			return err
+		}
+		outputFile = filepath.Join(defaultDir, "_map.md")
+	}
+
+	// write to file
+	f, err := os.Create(outputFile)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	codemap.FormatMap(f, sections)
+
+	// also stdout
+	codemap.FormatMap(os.Stdout, sections)
 	return nil
 }
 
