@@ -241,25 +241,39 @@ func runHistory() error {
 		return buildErr
 	}
 
-	if len(histories) == 0 {
-		return nil
+	if len(histories) > 0 {
+		// 새 변경 사항 캐시에 기록
+		if err := output.WriteHistories(histories, outputDir, format); err != nil {
+			return err
+		}
 	}
 
-	// always write cache
-	if err := output.WriteHistories(histories, outputDir, format); err != nil {
-		return err
-	}
-
-	// stdout: single file only, unless -q or --output suppresses
+	// stdout: 단일 파일만, -q 아니고 기본 캐시 경로일 때
 	if !quiet && outputDir == filepath.Join(projectRoot, ".whyso") && !targetInfo.IsDir() {
-		for _, h := range histories {
-			switch format {
-			case "json":
-				output.FormatJSON(os.Stdout, h)
-			default:
-				output.FormatYAML(os.Stdout, h)
+		// 새 결과가 있으면 그걸 출력, 없으면 기존 캐시에서 읽기
+		if len(histories) > 0 {
+			for _, h := range histories {
+				switch format {
+				case "json":
+					output.FormatJSON(os.Stdout, h)
+				default:
+					output.FormatYAML(os.Stdout, h)
+				}
+				fmt.Println("---")
 			}
-			fmt.Println("---")
+		} else {
+			// 기존 캐시 파일에서 읽어서 출력
+			targetRel, _ := filepath.Rel(projectRoot, absTarget)
+			cachedPath := output.OutputPath(outputDir, targetRel, format)
+			if cached, err := output.ReadYAML(cachedPath); err == nil {
+				switch format {
+				case "json":
+					output.FormatJSON(os.Stdout, cached)
+				default:
+					output.FormatYAML(os.Stdout, cached)
+				}
+				fmt.Println("---")
+			}
 		}
 	}
 	return nil
