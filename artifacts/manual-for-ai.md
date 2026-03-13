@@ -66,7 +66,7 @@ Supported: Go, TypeScript, JavaScript, Python, Rust, SSaC, OpenAPI, SQL, Rego, G
 
 ```yaml
 apiVersion: whyso/v1
-file: internal/parser/jsonl.go
+file: pkg/parser/jsonl.go
 created: 2026-03-12T01:22:43Z
 history:
   - timestamp: 2026-03-12T01:26:32Z

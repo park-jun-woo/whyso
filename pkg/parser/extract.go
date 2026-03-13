@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/clari/whyso/internal/model"
+	"github.com/clari/whyso/pkg/model"
 )
 
 // FileChange represents a single file modification extracted from a tool_use.

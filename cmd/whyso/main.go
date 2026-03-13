@@ -8,10 +8,10 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/clari/whyso/internal/codemap"
-	"github.com/clari/whyso/internal/history"
 	"github.com/clari/whyso/internal/output"
-	"github.com/clari/whyso/internal/parser"
+	"github.com/clari/whyso/pkg/codemap"
+	"github.com/clari/whyso/pkg/history"
+	"github.com/clari/whyso/pkg/parser"
 )
 
 func main() {

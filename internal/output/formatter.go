@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/clari/whyso/internal/history"
+	"github.com/clari/whyso/pkg/history"
 )
 
 const Version = "0.1.0"

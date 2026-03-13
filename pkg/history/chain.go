@@ -3,7 +3,7 @@ package history
 import (
 	"strings"
 
-	"github.com/clari/whyso/internal/model"
+	"github.com/clari/whyso/pkg/model"
 )
 
 const maxChainDepth = 100
