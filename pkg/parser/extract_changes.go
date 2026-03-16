@@ -15,21 +15,7 @@ func ExtractChanges(records []model.Record) []FileChange {
 		if rec.Type != "assistant" {
 			continue
 		}
-
-		blocks := rec.ContentBlocks()
-		for _, block := range blocks {
-			fc := extractBlockChange(block)
-			if fc == nil {
-				continue
-			}
-			fc.RecordUUID = rec.UUID
-			fc.RecordIndex = i
-			fc.Timestamp = rec.Timestamp
-			fc.SessionID = rec.SessionID
-			fc.SourceFile = rec.SourceFile
-			fc.SourceLine = rec.SourceLine
-			changes = append(changes, *fc)
-		}
+		changes = collectBlockChanges(changes, rec, i)
 	}
 
 	return changes

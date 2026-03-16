@@ -10,13 +10,14 @@ import (
 
 func findFirstUserMessage(records []model.Record) (time.Time, string) {
 	for _, rec := range records {
-		if rec.IsUserMessage() {
-			content := rec.UserContent()
-			if len(content) > 80 {
-				content = content[:80] + "..."
-			}
-			return rec.Timestamp, content
+		if !rec.IsUserMessage() {
+			continue
 		}
+		content := rec.UserContent()
+		if len(content) > 80 {
+			content = content[:80] + "..."
+		}
+		return rec.Timestamp, content
 	}
 	return time.Time{}, ""
 }

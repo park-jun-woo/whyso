@@ -25,14 +25,8 @@ func buildHistories(sessionsDir, projectRoot string, since time.Time, filter fun
 			continue
 		}
 
-		if !since.IsZero() {
-			info, err := entry.Info()
-			if err != nil {
-				continue
-			}
-			if !info.ModTime().After(since) {
-				continue
-			}
+		if !since.IsZero() && skipBySince(entry, since) {
+			continue
 		}
 
 		path := filepath.Join(sessionsDir, entry.Name())

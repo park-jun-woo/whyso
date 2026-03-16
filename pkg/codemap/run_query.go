@@ -33,13 +33,7 @@ func runQuery(lang *sitter.Language, src []byte, query string) []string {
 		if !ok {
 			break
 		}
-		for _, capture := range match.Captures {
-			name := capture.Node.Content(src)
-			if name == "" {
-				continue
-			}
-			names = append(names, name)
-		}
+		names = collectCaptures(names, match, src)
 	}
 	return names
 }

@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
-	"time"
 
 	"github.com/clari/whyso/internal/output"
 	"github.com/clari/whyso/pkg/history"
@@ -48,47 +46,13 @@ func runHistory() error {
 		return err
 	}
 
-	filter := func(relPath string) bool {
-		if targetInfo.IsDir() {
-			if !all {
-				return false
-			}
-			targetRel, err := filepath.Rel(projectRoot, absTarget)
-			if err != nil {
-				return false
-			}
-			if targetRel == "." {
-				return true
-			}
-			return strings.HasPrefix(relPath, targetRel+"/") || relPath == targetRel
-		}
-		targetRel, err := filepath.Rel(projectRoot, absTarget)
-		if err != nil {
-			return false
-		}
-		return relPath == targetRel
-	}
+	filter := makeFilter(targetInfo, all, projectRoot, absTarget)
 
 	if reset {
 		clearCache(outputDir, format)
 	}
 
-	// 타겟 범위 내 캐시 mtime만 확인
-	var since time.Time
-	if !targetInfo.IsDir() {
-		targetRel, _ := filepath.Rel(projectRoot, absTarget)
-		cachedPath := output.OutputPath(outputDir, targetRel, format)
-		if info, err := os.Stat(cachedPath); err == nil {
-			since = info.ModTime()
-		}
-	} else {
-		targetRel, _ := filepath.Rel(projectRoot, absTarget)
-		if targetRel == "." {
-			since = oldestOutputMtime(outputDir, format)
-		} else {
-			since = oldestOutputMtime(filepath.Join(outputDir, targetRel), format)
-		}
-	}
+	since := resolveSince(targetInfo, projectRoot, absTarget, outputDir, format)
 	var histories map[string]*history.FileHistory
 	var buildErr error
 	if since.IsZero() {
@@ -109,31 +73,7 @@ func runHistory() error {
 
 	// stdout: 단일 파일만, -q 아니고 기본 캐시 경로일 때
 	if !quiet && outputDir == filepath.Join(projectRoot, ".whyso") && !targetInfo.IsDir() {
-		// 새 결과가 있으면 그걸 출력, 없으면 기존 캐시에서 읽기
-		if len(histories) > 0 {
-			for _, h := range histories {
-				switch format {
-				case "json":
-					output.FormatJSON(os.Stdout, h)
-				default:
-					output.FormatYAML(os.Stdout, h)
-				}
-				fmt.Println("---")
-			}
-		} else {
-			// 기존 캐시 파일에서 읽어서 출력
-			targetRel, _ := filepath.Rel(projectRoot, absTarget)
-			cachedPath := output.OutputPath(outputDir, targetRel, format)
-			if cached, err := output.ReadYAML(cachedPath); err == nil {
-				switch format {
-				case "json":
-					output.FormatJSON(os.Stdout, cached)
-				default:
-					output.FormatYAML(os.Stdout, cached)
-				}
-				fmt.Println("---")
-			}
-		}
+		printHistoryOutput(histories, format, outputDir, projectRoot, absTarget)
 	}
 	return nil
 }
