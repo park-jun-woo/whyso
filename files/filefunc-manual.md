@@ -65,8 +65,9 @@ For Go application-layer projects: backend services, CLI tools, code generators,
 | Rule | Description | Severity |
 |---|---|---|
 | C1 | `required` section must have at least one key with at least one value | ERROR |
-| C2 | No duplicate values within the same key | ERROR |
-| C3 | All values lowercase + hyphens only (`[a-z][a-z0-9-]*`) | ERROR |
+| C2 | No duplicate keys within the same section | ERROR |
+| C3 | All keys lowercase + hyphens only (`[a-z][a-z0-9-]*`) | ERROR |
+| C4 | Required values should have non-empty descriptions | WARNING |
 
 Codebook is validated first. If codebook fails, code validation does not run.
 
@@ -123,13 +124,21 @@ control=sequence   → read only the step you need. Other steps: what is enough.
 
 ```yaml
 required:
-  feature: [validate, annotate, chain, parse, codebook, report, cli]
-  type: [command, rule, parser, walker, model, formatter, loader, util]
+  feature:
+    validate: "code structure rule validation (F1,Q1,A1 etc.)"
+    parse: "source code, annotation, codebook parsing"
+  type:
+    command: "cobra command entrypoint"
+    rule: "individual validation rule"
 
 optional:
-  pattern: [error-collection, file-visitor, rule-registry]
-  level: [error, warning, info]
+  pattern:
+    error-collection: "collect errors for batch reporting"
+  level:
+    error: ""
 ```
+
+Each value has a description (`key: "description"`). Used by `filefunc context` for LLM feature selection.
 
 Amend codebook.yaml when new values are needed.
 
@@ -142,14 +151,21 @@ filefunc validate                                    # current dir as project ro
 filefunc validate /path/to/project                   # explicit project root
 filefunc validate --format json
 filefunc chain func RunAll --chon 2                  # call relationships
+filefunc chain func RunAll --chon 2 --meta what      # with //ff:what annotations
+filefunc chain func RunAll --chon 2 --meta all       # with all annotations
+filefunc chain func RunAll --chon 2 --meta what \
+  --prompt "nesting depth 수정" --rate 0.8            # reranker filtering
 filefunc chain feature validate                      # feature-wide chain
 filefunc chain func RunAll --root /path/to/project   # explicit project root
+filefunc context "nesting depth 수정"                   # LLM 4-stage context search
 filefunc llmc                                        # LLM what-body verification
 filefunc llmc /path/to/project
 filefunc llmc --model qwen3:8b --threshold 0.9
 ```
 
 Project root must contain `go.mod` and `codebook.yaml`. Omit to use current directory.
+
+`--prompt` requires vLLM server: `pip install vllm && vllm serve Qwen/Qwen3-Reranker-0.6B --task score --hf_overrides '{"architectures":["Qwen3ForSequenceClassification"],"classifier_from_token":["no","yes"],"is_original_qwen3_reranker":true}'`
 
 Exit code 1 on violations. Zero violations required before committing.
 

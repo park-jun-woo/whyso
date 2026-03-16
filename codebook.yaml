@@ -1,6 +1,23 @@
 required:
-  feature: [session, change, history, codemap, output, cli]
-  type: [command, parser, builder, merger, formatter, reader, model, util]
+  feature:
+    session: "JSONL 세션 파싱 및 세션 목록"
+    change: "tool_use에서 파일 변경 추출"
+    history: "파일별 변경 이력 빌드 및 병합"
+    codemap: "tree-sitter/정규식 기반 키워드 맵 생성"
+    output: "이력 YAML/JSON 포맷 및 파일 출력"
+    cli: "CLI 진입점 및 서브커맨드"
+  type:
+    command: "CLI 서브커맨드 핸들러"
+    parser: "데이터 파싱 (JSONL, tree-sitter, YAML)"
+    builder: "데이터 구조 빌드 (이력, 인덱스, 맵)"
+    merger: "기존 이력과 신규 이력 병합"
+    formatter: "출력 포맷팅 (YAML, JSON, 테이블)"
+    reader: "캐시 파일 읽기"
+    model: "데이터 구조체 정의"
+    util: "범용 유틸리티"
 
 optional:
-  pattern: [file-visitor, incremental-update, parent-chain]
+  pattern:
+    file-visitor: "디렉토리 재귀 탐색 패턴"
+    incremental-update: "mtime 기반 증분 갱신"
+    parent-chain: "parentUuid 체인 역추적"
