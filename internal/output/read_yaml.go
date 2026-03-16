@@ -1,10 +1,11 @@
+//ff:func feature=output type=reader control=iteration dimension=1
+//ff:what 기존 YAML 이력 파일을 FileHistory로 읽기
+
 package output
 
 import (
 	"bufio"
-	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -34,25 +35,21 @@ func ReadYAML(path string) (*history.FileHistory, error) {
 			continue
 		}
 		if strings.HasPrefix(line, "created: ") {
-			t, err := time.Parse(time.RFC3339, strings.TrimPrefix(line, "created: "))
-			if err == nil {
-				h.Created = t
-			}
+			h.Created, _ = time.Parse(time.RFC3339, strings.TrimPrefix(line, "created: "))
 			continue
 		}
 		if line == "history:" {
 			continue
 		}
-		if strings.HasPrefix(line, "  - timestamp: ") {
-			if current != nil {
-				h.History = append(h.History, *current)
-			}
+
+		isNewEntry := strings.HasPrefix(line, "  - timestamp: ")
+		if isNewEntry && current != nil {
+			h.History = append(h.History, *current)
+		}
+		if isNewEntry {
 			current = &history.ChangeEntry{}
 			inSources = false
-			t, err := time.Parse(time.RFC3339, strings.TrimPrefix(line, "  - timestamp: "))
-			if err == nil {
-				current.Timestamp = t
-			}
+			current.Timestamp, _ = time.Parse(time.RFC3339, strings.TrimPrefix(line, "  - timestamp: "))
 			continue
 		}
 
@@ -109,31 +106,4 @@ func ReadYAML(path string) (*history.FileHistory, error) {
 	}
 
 	return h, scanner.Err()
-}
-
-func parseSource(s string) history.Source {
-	idx := strings.LastIndex(s, ":")
-	if idx < 0 {
-		return history.Source{File: s}
-	}
-	line, err := strconv.Atoi(s[idx+1:])
-	if err != nil {
-		return history.Source{File: s}
-	}
-	return history.Source{File: s[:idx], Line: line}
-}
-
-func unquote(s string) string {
-	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
-		u, err := strconv.Unquote(s)
-		if err == nil {
-			return u
-		}
-	}
-	return s
-}
-
-// OutputPath returns the output file path for a given relative path.
-func OutputPath(outputDir, relPath, format string) string {
-	return fmt.Sprintf("%s/%s.%s", outputDir, relPath, format)
 }

@@ -1,9 +1,8 @@
+//ff:func feature=history type=merger control=iteration dimension=1
+//ff:what 기존 이력과 신규 이력을 병합하여 중복 제거
 package history
 
-import (
-	"fmt"
-	"sort"
-)
+import "sort"
 
 // Merge combines existing and new histories, removing duplicates.
 // Duplicate is defined by (timestamp, first source file:line).
@@ -46,12 +45,4 @@ func Merge(existing, incoming *FileHistory) *FileHistory {
 		result.Created = merged[0].Timestamp
 	}
 	return result
-}
-
-func entryKey(e ChangeEntry) string {
-	ts := e.Timestamp.Unix()
-	if len(e.Sources) > 0 {
-		return fmt.Sprintf("%d:%s:%d", ts, e.Sources[0].File, e.Sources[0].Line)
-	}
-	return fmt.Sprintf("%d:%s:%s", ts, e.Session, e.Tool)
 }

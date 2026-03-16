@@ -1,0 +1,6 @@
+required:
+  feature: [session, change, history, codemap, output, cli]
+  type: [command, parser, builder, merger, formatter, reader, model, util]
+
+optional:
+  pattern: [file-visitor, incremental-update, parent-chain]
