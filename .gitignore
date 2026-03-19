@@ -24,5 +24,8 @@ Thumbs.db
 .claude/
 CLAUDE.md
 
+# Internal files
+files/
+
 # whyso cache
 .whyso/
