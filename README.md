@@ -1,9 +1,44 @@
 # whyso
 
-Extract the **"why"** behind every file change from Claude Code sessions, and map your codebase for precise AI navigation.
+`git blame` tells you who changed what. **It never tells you why.**
 
-`git blame` shows *who* changed *what* and *when*.
-`whyso` shows **why** — the original user intent and AI's reasoning behind each change.
+## Why I built this
+
+You use Claude Code, commits pile up. Weeks later you revisit the code — "why is this structured like this?" You run `git blame`. Commit message: `Refactor parser logic`. OK, but *why*?
+
+The answer was already on my machine.
+
+I opened a Claude Code session log (JSONL) and every file change was chained:
+
+```
+User: "Fix the bug where parser ignores empty sessions"
+  → Claude: "Empty session filtering was missing, adding early return to ParseSession"
+    → tool_use: Edit parser.go
+```
+
+Request → reasoning → execution. All recorded.
+
+`whyso` traces this chain and links every file change to the **original request** and **Claude's reasoning**.
+
+That refactoring you asked Claude to do 3 months ago — why it ended up that way — you can see it right now:
+
+```bash
+go install github.com/park-jun-woo/whyso/cmd/whyso@latest
+whyso history CLAUDE.md   # < 1s, even for month-long projects
+```
+
+```yaml
+apiVersion: whyso/v1
+file: CLAUDE.md
+created: 2026-03-12T01:22:43Z
+history:
+  - timestamp: 2026-03-12T01:26:32Z
+    session: 441b6643-d001-45df-811a-8ec138e73894
+    user_request: "Add plan document rules to CLAUDE.md"
+    answer: "Added specs/plans/ directory, plan-first workflow, and PhaseNNN naming convention."
+    tool: Edit
+    source: ~/.claude/projects/-home-user-project/441b6643.jsonl:79
+```
 
 ## How it works
 
@@ -86,21 +121,6 @@ whyso history README.md --format json
 whyso history README.md --reset
 ```
 
-Example output:
-
-```yaml
-apiVersion: whyso/v1
-file: CLAUDE.md
-created: 2026-03-12T01:22:43Z
-history:
-  - timestamp: 2026-03-12T01:26:32Z
-    session: 441b6643-d001-45df-811a-8ec138e73894
-    user_request: "Add plan document rules to CLAUDE.md"
-    answer: "Added specs/plans/ directory, plan-first workflow, and PhaseNNN naming convention."
-    tool: Edit
-    source: ~/.claude/projects/-home-user-project/441b6643.jsonl:79
-```
-
 ### List sessions
 
 ```bash
@@ -122,9 +142,9 @@ whyso sessions
 
 ## Features
 
-- **Keyword map** — tree-sitter powered extraction of functions, endpoints, queries, rules, states
 - **User intent tracking** — traces `parentUuid` chain to find the original user request
-- **AI answer extraction** — captures Claude's explanation of what it did
+- **AI reasoning** — captures why Claude made each change, in its own words
+- **Keyword map** — tree-sitter powered extraction of functions, endpoints, queries, rules, states
 - **Grouped changes** — consecutive edits from the same request are merged
 - **Subagent support** — includes changes made by subagent sessions
 - **Incremental updates** — caches to `.whyso/`, only re-parses new sessions
