@@ -1,6 +1,6 @@
 # whyso
 
-`git blame` tells you who changed what. **It never tells you why.**
+See why Claude actually changed that file — intent extracted from session JSONL.
 
 ## Why I built this
 
