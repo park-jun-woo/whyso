@@ -35,11 +35,7 @@ func buildHistories(sessionsDir, projectRoot string, since time.Time, filter fun
 			continue
 		}
 
-		changes := parser.ExtractChanges(records)
-		idx := BuildIndex(records)
-		sessionID := strings.TrimSuffix(entry.Name(), ".jsonl")
-
-		processChanges(changes, idx, histories, projectRoot, sessionID, records, filter)
+		processSessionFile(path, records, histories, projectRoot, filter)
 	}
 
 	for _, h := range histories {

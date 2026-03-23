@@ -16,6 +16,9 @@ func FormatYAML(w io.Writer, h *history.FileHistory) error {
 	fmt.Fprintf(w, "apiVersion: whyso/v1\n")
 	fmt.Fprintf(w, "file: %s\n", h.File)
 	fmt.Fprintf(w, "created: %s\n", h.Created.Format(time.RFC3339))
+	if h.MovedFrom != "" {
+		fmt.Fprintf(w, "moved_from: %s\n", h.MovedFrom)
+	}
 	fmt.Fprintf(w, "history:\n")
 	for _, e := range h.History {
 		fmt.Fprintf(w, "  - timestamp: %s\n", e.Timestamp.Format(time.RFC3339))
@@ -30,5 +33,6 @@ func FormatYAML(w io.Writer, h *history.FileHistory) error {
 		}
 		formatSources(w, e.Sources)
 	}
+	formatHints(w, h.Hints)
 	return nil
 }

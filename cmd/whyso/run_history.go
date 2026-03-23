@@ -13,6 +13,10 @@ import (
 )
 
 func runHistory() error {
+	if err := checkDeps(); err != nil {
+		return err
+	}
+
 	sessionsDir, err := getSessionsDir()
 	if err != nil {
 		return err
@@ -41,10 +45,7 @@ func runHistory() error {
 		return err
 	}
 
-	targetInfo, err := os.Stat(absTarget)
-	if err != nil {
-		return err
-	}
+	targetInfo, _ := os.Stat(absTarget)
 
 	filter := makeFilter(targetInfo, all, projectRoot, absTarget)
 
@@ -64,15 +65,17 @@ func runHistory() error {
 		return buildErr
 	}
 
+	isSingleFile := targetInfo == nil || !targetInfo.IsDir()
+	if len(histories) == 0 && isSingleFile {
+		histories = retryWithRename(histories, sessionsDir, projectRoot, absTarget)
+	}
+
 	if len(histories) > 0 {
-		// 새 변경 사항 캐시에 기록
 		if err := output.WriteHistories(histories, outputDir, format); err != nil {
 			return err
 		}
 	}
-
-	// stdout: 단일 파일만, -q 아니고 기본 캐시 경로일 때
-	if !quiet && outputDir == filepath.Join(projectRoot, ".whyso") && !targetInfo.IsDir() {
+	if !quiet && outputDir == filepath.Join(projectRoot, ".whyso") && isSingleFile {
 		printHistoryOutput(histories, format, outputDir, projectRoot, absTarget)
 	}
 	return nil

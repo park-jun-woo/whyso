@@ -9,7 +9,7 @@ import (
 )
 
 func makeFilter(targetInfo os.FileInfo, all bool, projectRoot, absTarget string) func(string) bool {
-	if !targetInfo.IsDir() {
+	if targetInfo == nil || !targetInfo.IsDir() {
 		targetRel, err := filepath.Rel(projectRoot, absTarget)
 		if err != nil {
 			return func(string) bool { return false }

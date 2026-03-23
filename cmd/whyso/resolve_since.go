@@ -8,7 +8,7 @@ import (
 )
 
 func resolveSince(targetInfo os.FileInfo, projectRoot, absTarget, outputDir, format string) time.Time {
-	if !targetInfo.IsDir() {
+	if targetInfo == nil || !targetInfo.IsDir() {
 		return resolveSinceFile(projectRoot, absTarget, outputDir, format)
 	}
 	return resolveSinceDir(projectRoot, absTarget, outputDir, format)
