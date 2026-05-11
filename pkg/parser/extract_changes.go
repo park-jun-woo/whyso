@@ -3,7 +3,7 @@
 package parser
 
 import (
-	"github.com/clari/whyso/pkg/model"
+	"github.com/park-jun-woo/whyso/pkg/model"
 )
 
 // ExtractChanges extracts file changes from Write/Edit tool_use blocks.

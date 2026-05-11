@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/clari/whyso/pkg/model"
-	"github.com/clari/whyso/pkg/parser"
+	"github.com/park-jun-woo/whyso/pkg/model"
+	"github.com/park-jun-woo/whyso/pkg/parser"
 )
 
 func processChange(fc parser.FileChange, idx RecordIndex, histories map[string]*FileHistory, projectRoot string, sessionID string, records []model.Record, filter func(string) bool) bool {

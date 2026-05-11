@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/clari/whyso/internal/output"
+	"github.com/park-jun-woo/whyso/internal/output"
 )
 
 func resolveSinceFile(projectRoot, absTarget, outputDir, format string) time.Time {

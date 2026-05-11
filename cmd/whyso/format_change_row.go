@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"text/tabwriter"
 
-	"github.com/clari/whyso/pkg/history"
-	"github.com/clari/whyso/pkg/parser"
+	"github.com/park-jun-woo/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/pkg/parser"
 )
 
 func formatChangeRow(w *tabwriter.Writer, fc parser.FileChange, idx history.RecordIndex) {

@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/clari/whyso/pkg/model"
-	"github.com/clari/whyso/pkg/parser"
+	"github.com/park-jun-woo/whyso/pkg/model"
+	"github.com/park-jun-woo/whyso/pkg/parser"
 )
 
 func processSessionFile(path string, records []model.Record, histories map[string]*FileHistory, projectRoot string, filter func(string) bool) {

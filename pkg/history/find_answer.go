@@ -5,7 +5,7 @@ package history
 import (
 	"strings"
 
-	"github.com/clari/whyso/pkg/model"
+	"github.com/park-jun-woo/whyso/pkg/model"
 )
 
 // FindAnswer looks forward from recordIndex in the records slice

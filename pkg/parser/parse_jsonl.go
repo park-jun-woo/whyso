@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/clari/whyso/pkg/model"
+	"github.com/park-jun-woo/whyso/pkg/model"
 )
 
 const maxLineSize = 10 * 1024 * 1024 // 10MB

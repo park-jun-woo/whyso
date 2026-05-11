@@ -4,7 +4,7 @@
 package parser
 
 import (
-	"github.com/clari/whyso/pkg/model"
+	"github.com/park-jun-woo/whyso/pkg/model"
 )
 
 // ExtractBashHints extracts cp/mv hints from Bash tool_use blocks.

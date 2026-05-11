@@ -10,8 +10,8 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/clari/whyso/pkg/history"
-	"github.com/clari/whyso/pkg/parser"
+	"github.com/park-jun-woo/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/pkg/parser"
 )
 
 func runChanges() error {

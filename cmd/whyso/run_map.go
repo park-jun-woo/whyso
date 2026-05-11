@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/clari/whyso/pkg/codemap"
+	"github.com/park-jun-woo/whyso/pkg/codemap"
 )
 
 func runMap() error {

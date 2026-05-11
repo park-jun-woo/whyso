@@ -1,4 +1,4 @@
-module github.com/clari/whyso
+module github.com/park-jun-woo/whyso
 
 go 1.22.2
 

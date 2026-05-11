@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/clari/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/pkg/history"
 )
 
 func formatSources(w io.Writer, sources []history.Source) {

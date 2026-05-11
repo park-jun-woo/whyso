@@ -6,7 +6,7 @@ package output
 import (
 	"io"
 
-	"github.com/clari/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/pkg/history"
 )
 
 func formatHistory(w io.Writer, h *history.FileHistory, format string) error {

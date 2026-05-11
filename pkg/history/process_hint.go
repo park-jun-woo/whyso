@@ -4,7 +4,7 @@
 package history
 
 import (
-	"github.com/clari/whyso/pkg/parser"
+	"github.com/park-jun-woo/whyso/pkg/parser"
 )
 
 func processHint(bh parser.BashHint, histories map[string]*FileHistory, projectRoot string) {

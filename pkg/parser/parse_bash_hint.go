@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"regexp"
 
-	"github.com/clari/whyso/pkg/model"
+	"github.com/park-jun-woo/whyso/pkg/model"
 )
 
 var bashCpMvPattern = regexp.MustCompile(`^\s*(cp|mv)\s+(?:-[a-zA-Z]+\s+)*(.+?)\s+(.+?)\s*$`)

@@ -5,7 +5,7 @@ package parser
 import (
 	"time"
 
-	"github.com/clari/whyso/pkg/model"
+	"github.com/park-jun-woo/whyso/pkg/model"
 )
 
 func findFirstUserMessage(records []model.Record) (time.Time, string) {

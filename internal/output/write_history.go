@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/clari/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/pkg/history"
 )
 
 func writeHistory(relPath string, h *history.FileHistory, outputDir, format string) error {

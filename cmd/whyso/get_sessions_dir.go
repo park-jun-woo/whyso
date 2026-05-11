@@ -6,7 +6,7 @@ package main
 import (
 	"os"
 
-	"github.com/clari/whyso/pkg/parser"
+	"github.com/park-jun-woo/whyso/pkg/parser"
 )
 
 func getSessionsDir() (string, error) {

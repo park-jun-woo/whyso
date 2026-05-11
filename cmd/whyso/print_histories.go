@@ -3,7 +3,7 @@
 package main
 
 import (
-	"github.com/clari/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/pkg/history"
 )
 
 func printHistories(histories map[string]*history.FileHistory, format string) {

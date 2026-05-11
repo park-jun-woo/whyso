@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/clari/whyso/pkg/model"
+	"github.com/park-jun-woo/whyso/pkg/model"
 )
 
 // ListSessions returns session info for all JSONL files in the given directory.

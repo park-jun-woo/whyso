@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"io"
 
-	"github.com/clari/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/pkg/history"
 )
 
 // FormatJSON writes a FileHistory as JSON to w.

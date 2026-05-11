@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/clari/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/pkg/history"
 )
 
 func parseSource(s string) history.Source {

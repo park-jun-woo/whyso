@@ -5,7 +5,7 @@ package parser
 import (
 	"encoding/json"
 
-	"github.com/clari/whyso/pkg/model"
+	"github.com/park-jun-woo/whyso/pkg/model"
 )
 
 func parseEdit(block model.ContentBlock) *FileChange {

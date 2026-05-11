@@ -8,7 +8,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/clari/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/pkg/history"
 )
 
 func formatHints(w io.Writer, hints []history.Hint) {

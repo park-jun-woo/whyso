@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/clari/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/pkg/history"
 )
 
 // ReadYAML reads an existing YAML history file back into a FileHistory.

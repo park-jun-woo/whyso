@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/clari/whyso/pkg/parser"
+	"github.com/park-jun-woo/whyso/pkg/parser"
 )
 
 func buildHistories(sessionsDir, projectRoot string, since time.Time, filter func(string) bool) (map[string]*FileHistory, error) {

@@ -5,8 +5,8 @@ package main
 import (
 	"path/filepath"
 
-	"github.com/clari/whyso/internal/output"
-	"github.com/clari/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/internal/output"
+	"github.com/park-jun-woo/whyso/pkg/history"
 )
 
 func printHistoryOutput(histories map[string]*history.FileHistory, format, outputDir, projectRoot, absTarget string) {

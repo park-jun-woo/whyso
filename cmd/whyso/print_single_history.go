@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/clari/whyso/internal/output"
-	"github.com/clari/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/internal/output"
+	"github.com/park-jun-woo/whyso/pkg/history"
 )
 
 func printSingleHistory(h *history.FileHistory, format string) {

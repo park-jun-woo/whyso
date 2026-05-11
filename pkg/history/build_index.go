@@ -2,7 +2,7 @@
 //ff:what Record 슬라이스에서 UUID→Record 인덱스를 생성
 package history
 
-import "github.com/clari/whyso/pkg/model"
+import "github.com/park-jun-woo/whyso/pkg/model"
 
 // BuildIndex creates a UUID -> Record map from a slice of records.
 func BuildIndex(records []model.Record) RecordIndex {

@@ -4,7 +4,7 @@
 package output
 
 import (
-	"github.com/clari/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/pkg/history"
 )
 
 // WriteHistories writes all histories to the output directory, mirroring file paths.

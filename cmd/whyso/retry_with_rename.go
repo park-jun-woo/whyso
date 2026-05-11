@@ -6,7 +6,7 @@ package main
 import (
 	"path/filepath"
 
-	"github.com/clari/whyso/pkg/history"
+	"github.com/park-jun-woo/whyso/pkg/history"
 )
 
 func retryWithRename(histories map[string]*history.FileHistory, sessionsDir, projectRoot, absTarget string) map[string]*history.FileHistory {
