@@ -26,6 +26,7 @@ CLAUDE.md
 
 # Internal files
 files/
+plans/
 
 # whyso cache
 .whyso/
